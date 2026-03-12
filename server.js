@@ -1,96 +1,197 @@
+const express = require("express")
+const mongoose = require("mongoose")
+const multer = require("multer")
+const cors = require("cors")
 
-const express=require("express")
-const mongoose=require("mongoose")
-const jwt=require("jsonwebtoken")
-const multer=require("multer")
-const {CloudinaryStorage}=require("multer-storage-cloudinary")
-const cloudinary=require("cloudinary").v2
-const cors=require("cors")
+const app = express()
 
-const app=express()
-app.use(cors())
 app.use(express.json())
+app.use(cors())
 app.use(express.static("public"))
+app.use("/uploads", express.static("uploads"))
 
-const ADMIN_USER="Satanic_Dabers"
-const ADMIN_PASS="Satanic432101"
-const SECRET="super_secret"
+/*
+ADMIN LOGIN
+*/
 
-mongoose.connect(process.env.MONGO_URI)
+const ADMIN_USER = "Satanic_Dabers"
+const ADMIN_PASS = "Satanic432101"
 
-cloudinary.config({
- cloud_name:process.env.CLOUDINARY_NAME,
- api_key:process.env.CLOUDINARY_KEY,
- api_secret:process.env.CLOUDINARY_SECRET
-})
+/*
+MONGODB
+*/
 
-const storage=new CloudinaryStorage({
- cloudinary:cloudinary,
- params:{resource_type:"video",folder:"satanic_dabers_videos"}
-})
+mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/satanic_dabers")
 
-const upload=multer({storage})
-
-const Video=mongoose.model("Video",{
+const Video = mongoose.model("Video",{
 title:String,
-url:String,
+file:String,
 likes:{type:Number,default:0},
 dislikes:{type:Number,default:0},
-comments:[{
+comments:[
+{
 user:String,
 text:String,
 date:Date
-}]
-})
-
-function auth(req,res,next){
-const token=req.headers.authorization
-if(!token) return res.sendStatus(403)
-try{jwt.verify(token,SECRET);next()}catch{res.sendStatus(403)}
 }
-
-app.post("/api/login",(req,res)=>{
-const{username,password}=req.body
-if(username===ADMIN_USER&&password===ADMIN_PASS){
-const token=jwt.sign({u:username},SECRET)
-res.json({token})
-}else res.status(401).json({error:"login failed"})
+]
 })
 
-app.post("/api/upload",auth,upload.single("video"),async(req,res)=>{
-const v=await Video.create({title:req.body.title,url:req.file.path})
-res.json(v)
+/*
+UPLOAD SYSTEM
+*/
+
+const storage = multer.diskStorage({
+destination:(req,file,cb)=>{
+cb(null,"uploads/")
+},
+filename:(req,file,cb)=>{
+cb(null,Date.now()+"_"+file.originalname)
+}
 })
 
-app.get("/api/videos",async(req,res)=>{
-res.json(await Video.find())
-})
+const upload = multer({storage})
 
-app.post("/api/like/:id",async(req,res)=>{
-const v=await Video.findById(req.params.id)
-v.likes++
-await v.save()
-res.json(v)
-})
-
-app.post("/api/dislike/:id",async(req,res)=>{
-const v=await Video.findById(req.params.id)
-v.dislikes++
-await v.save()
-res.json(v)
-})
+/*
+ANTI SPAM
+*/
 
 function spamCheck(text){
-const banned=["http://","https://","spam","xxx"]
-return banned.some(w=>text.toLowerCase().includes(w))
+
+const banned = [
+"http://",
+"https://",
+"spam",
+"xxx",
+"porn",
+"casino"
+]
+
+return banned.some(word => text.toLowerCase().includes(word))
+
 }
 
-app.post("/api/comment/:id",async(req,res)=>{
-if(spamCheck(req.body.text)) return res.status(400).json({error:"spam detected"})
-const v=await Video.findById(req.params.id)
-v.comments.push({user:req.body.user,text:req.body.text,date:new Date()})
-await v.save()
-res.json(v)
+/*
+LOGIN
+*/
+
+app.post("/api/login",(req,res)=>{
+
+const {username,password} = req.body
+
+if(username === ADMIN_USER && password === ADMIN_PASS){
+res.json({success:true})
+}else{
+res.status(401).json({error:"login failed"})
+}
+
 })
 
-app.listen(process.env.PORT||3000,()=>console.log("Server running"))
+/*
+UPLOAD VIDEO
+*/
+
+app.post("/api/upload", upload.single("video"), async (req,res)=>{
+
+const v = await Video.create({
+title:req.body.title,
+file:req.file.filename
+})
+
+res.json(v)
+
+})
+
+/*
+GET VIDEOS
+*/
+
+app.get("/api/videos", async (req,res)=>{
+
+const vids = await Video.find().sort({_id:-1})
+
+res.json(vids)
+
+})
+
+/*
+LIKE
+*/
+
+app.post("/api/like/:id", async (req,res)=>{
+
+const v = await Video.findById(req.params.id)
+
+v.likes++
+
+await v.save()
+
+res.json(v)
+
+})
+
+/*
+DISLIKE
+*/
+
+app.post("/api/dislike/:id", async (req,res)=>{
+
+const v = await Video.findById(req.params.id)
+
+v.dislikes++
+
+await v.save()
+
+res.json(v)
+
+})
+
+/*
+COMMENT
+*/
+
+app.post("/api/comment/:id", async (req,res)=>{
+
+const text = req.body.text
+
+if(spamCheck(text)){
+return res.status(400).json({error:"spam detected"})
+}
+
+const v = await Video.findById(req.params.id)
+
+v.comments.push({
+user:req.body.user || "guest",
+text:text,
+date:new Date()
+})
+
+await v.save()
+
+res.json(v)
+
+})
+
+/*
+DELETE VIDEO (ADMIN)
+*/
+
+app.delete("/api/video/:id", async (req,res)=>{
+
+await Video.findByIdAndDelete(req.params.id)
+
+res.json({success:true})
+
+})
+
+/*
+SERVER
+*/
+
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT,()=>{
+
+console.log("🔥 Satanic Dabers server running on port",PORT)
+
+})
