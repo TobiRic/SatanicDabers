@@ -1,0 +1,8 @@
+
+body{background:#111;color:white;font-family:Arial;margin:0}
+header{background:black;padding:20px;text-align:center}
+nav button{margin:5px;padding:10px;background:#222;color:white;border:none;cursor:pointer}
+section{padding:20px;display:none}
+video{width:100%;max-width:600px}
+.like,.dislike{border:2px solid white;background:none;color:white;padding:6px 10px}
+.like.active,.dislike.active{background:white;color:black}

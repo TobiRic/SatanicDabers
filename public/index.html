@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Satanic Dabers</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+<h1>Satanic Dabers</h1>
+<nav id="nav"></nav>
+</header>
+
+<section id="home"></section>
+
+<section id="videos"></section>
+
+<section id="upload">
+<input id="title" placeholder="Title">
+<textarea id="desc" placeholder="Description"></textarea>
+<input type="file" id="file">
+<button onclick="uploadVideo()">Upload</button>
+</section>
+
+<section id="community"></section>
+
+<section id="admin">
+
+<h3>Admin login</h3>
+<input id="adminUser" placeholder="username">
+<input id="adminPass" placeholder="password">
+<button onclick="login()">Login</button>
+
+<div id="adminPanel" style="display:none">
+
+<h3>Edit Home</h3>
+<textarea id="editHome"></textarea>
+<button onclick="savePage('home','editHome')">Save</button>
+
+<h3>Edit Community</h3>
+<textarea id="editCommunity"></textarea>
+<button onclick="savePage('community','editCommunity')">Save</button>
+
+<h3>Edit Tabs</h3>
+<input id="tab0">
+<input id="tab1">
+<input id="tab2">
+<input id="tab3">
+<input id="tab4">
+<button onclick="saveTabs()">Save Tabs</button>
+
+</div>
+
+</section>
+
+<script src="script.js"></script>
+
+</body>
+</html>
