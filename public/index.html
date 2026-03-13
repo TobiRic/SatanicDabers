@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Satanic Dabers</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+<h1>Satanic Dabers</h1>
+
+<nav>
+<button onclick="showTab('home')">Home</button>
+<button onclick="showTab('videos')">Videos</button>
+<button onclick="showTab('upload')">Upload</button>
+<button onclick="showTab('community')">Community</button>
+<button onclick="showTab('admin')">Admin</button>
+</nav>
+
+</header>
+
+<section id="home">Welcome to Satanic Dabers</section>
+
+<section id="videos"></section>
+
+<section id="upload">
+
+<input id="title" placeholder="Title">
+<textarea id="desc" placeholder="Description"></textarea>
+<input type="file" id="file">
+
+<button onclick="uploadVideo()">Upload</button>
+
+</section>
+
+<section id="community">
+<p>Community page</p>
+</section>
+
+<section id="admin">
+
+<input id="adminUser" placeholder="username">
+<input id="adminPass" placeholder="password">
+
+<button onclick="login()">Login</button>
+
+</section>
+
+<script src="script.js"></script>
+
+</body>
+</html>
