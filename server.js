@@ -36,9 +36,40 @@ destination:(req,file,cb)=>cb(null,"uploads/"),
 filename:(req,file,cb)=>cb(null,Date.now()+"_"+file.originalname)
 })
 
-const upload = multer({storage})
+const multer = require("multer")
 
-app.post("/api/upload",upload.single("video"),async(req,res)=>{
+const storage = multer.diskStorage({
+ destination: function (req, file, cb) {
+  cb(null, "uploads/")
+ },
+ filename: function (req, file, cb) {
+  cb(null, Date.now() + "-" + file.originalname)
+ }
+})
+
+const upload = multer({ storage: storage })
+
+app.post("/api/upload", upload.single("video"), async (req, res) => {
+
+ if (!req.file) {
+  return res.status(400).json({ error: "No file uploaded" })
+ }
+
+ const video = new Video({
+  title: req.body.title,
+  description: req.body.description,
+  file: req.file.filename,
+  views: 0,
+  likes: 0,
+  dislikes: 0,
+  comments: []
+ })
+
+ await video.save()
+
+ res.json(video)
+
+})
 
 if(!req.file){
 return res.status(400).json({error:"No file"})
