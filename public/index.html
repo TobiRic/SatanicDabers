@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Satanic Dabers</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+<h1>Satanic Dabers</h1>
+
+<nav>
+<button onclick="showTab('videos')">Videos</button>
+<button id="uploadBtn" onclick="showTab('upload')" style="display:none">Upload</button>
+<button onclick="showTab('admin')">Admin</button>
+</nav>
+
+</header>
+
+<section id="home">Welcome to Satanic Dabers</section>
+
+<section id="videos"></section>
+
+<section id="upload">
+
+<input id="title" placeholder="Title">
+<textarea id="desc" placeholder="Description"></textarea>
+<input type="file" id="file">
+<button onclick="uploadVideo()">Upload</button>
+
+</section>
+
+<section id="community">Community page</section>
+
+<section id="admin">
+
+<input id="adminUser" placeholder="username">
+<input id="adminPass" placeholder="password">
+<button onclick="login()">Login</button>
+
+</section>
+
+<script src="script.js"></script>
+
+
+<div id="commentSection" style="max-width:800px;margin:auto">
+<h3>Comments</h3>
+<div id="comments"></div>
+<input id="commentInput" placeholder="Write comment">
+<button onclick="addComment()">Post</button>
+</div>
+
+<div style="text-align:center;margin:20px">
+<button onclick="like('main','like')">👍</button> <span id="likes">0</span>
+<button onclick="like('main','dislike')">👎</button> <span id="dislikes">0</span>
+</div>
+</body>
+
+
+</html>
